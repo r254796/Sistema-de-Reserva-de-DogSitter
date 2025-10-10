@@ -12,10 +12,11 @@ void salvarCuidadores();
 void salvarReservas();
 void liberarMemoria(); 
 
-[cite_start]// Funções de Relatórios (Opção 7 do Menu Principal [cite: 100, 271, 329])
+[cite_start]
 void menuRelatorios();
-void relatorioFaturamento(); [cite_start]// Faturamento total por cuidador [cite: 105, 117, 266, 348]
-void relatorioReservas();    [cite_start]// Total de reservas ativas e canceladas [cite: 106, 122, 261, 354]
-void historicoReservas();    [cite_start]// Histórico de todas as reservas [cite: 107, 125, 357, 358]
+void relatorioFaturamento(); [cite_start]
+void relatorioReservas();    [cite_start]
+void historicoReservas();    [cite_start]
 
-#endif // ARQUIVOS_H
+
+#endif 
