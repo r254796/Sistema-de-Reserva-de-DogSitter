@@ -6,7 +6,7 @@ void carregarCuidadores();
 void carregarReservas();
 void inicializarDados(); 
 
-[cite_start]// Funções de Salvamento (chamadas no FINAL do main.c, Opção 0 [cite: 36, 128-131, 261, 364-366])
+[cite_start]
 void salvarUsuarios();
 void salvarCuidadores();
 void salvarReservas();
@@ -20,3 +20,4 @@ void historicoReservas();    [cite_start]
 
 
 #endif 
+
