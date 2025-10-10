@@ -32,7 +32,7 @@ typedef struct Reserva {
     int duracao_horas;
     char nome_cachorro[MAX_NOME];
     float valor_total; 
-    char status[MAX_STATUS]; [cite_start]// "Ativa" ou "Cancelada" [cite: 92, 93, 319, 320]
+    char status[MAX_STATUS]; [cite_start]
 } Reserva;
 
 extern Usuario* usuarios;
@@ -43,5 +43,6 @@ extern int totalCuidadores;
 
 extern Reserva* reservas;
 extern int totalReservas;
+
 
 #endif 
