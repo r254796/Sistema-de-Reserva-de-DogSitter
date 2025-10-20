@@ -33,7 +33,8 @@ int main() {
         scanf("%d", &opcao);
 
             switch (opcao) {
-                case 1: 
+                case 1:
+                    limparTela();
                     printf("Modulo de Cadastro (Pessoa 1) nao implementado.\n");
                     break;
                 case 2: 
@@ -42,10 +43,9 @@ int main() {
                         limparTela();
                         exibirMenuPrincipal(); 
                     }
-                    opcao = 0;
                     break;
                 case 0:
-                    printf("\nSaindo do sistema... Ate logo!\n");
+                    printf("\nSaindo do sistema... Até logo!\n");
                     //salvarUsuarios(); //não implementado
                     //salvarCuidadores(); //não implementado
                     salvarReservas();

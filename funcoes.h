@@ -9,7 +9,7 @@ void limparTela(){
 }
 
 /*Possibilita o usuário de retornar ao menu anterior ou sair do programa*/
-int retornarMenu(){
+void retornarMenu(){
     int opcao;
     
     do{
@@ -21,7 +21,7 @@ int retornarMenu(){
 
     switch(opcao){
         case 0: printf("Saindo...\n"); exit(0);
-        case 1: limparTela(); return opcao;
+        case 1: limparTela(); break;
         default: printf("OPÇÃO INVÁLIDA.\n\n");
     }
 
@@ -51,10 +51,10 @@ void exibirMenuPrincipal(){
         while(getchar() != '\n'); //limpa o buffer
 
         switch (opcao) {
-            case 1: limparTela(); listarCuidadores(); opcao = retornarMenu(); break; //exibe a lista de cuidadores
+            case 1: limparTela(); listarCuidadores(); retornarMenu(); break; //exibe a lista de cuidadores
             case 7: limparTela(); exibirMenuRelatorios(); break;
-            case 0: printf("Saindo...\n"); break;
-            default: limparTela(); printf("Opcao Invalida.\n");
+            case 0: printf("Saindo...\n"); exit(0);
+            default: limparTela(); printf("OPÇÃO INVÁLIDA.\n");
         }
 
     } while(opcao != 0);
@@ -204,10 +204,10 @@ void exibirMenuRelatorios() {
 
         switch (opcao) {
             //case 1: relatorioFaturamento(); break; //não implementada
-            case 2: limparTela(); relatorioReservas(); opcao = retornarMenu(); limparTela(); break; //exibe o relatório de reservas
+            case 2: limparTela(); relatorioReservas(); retornarMenu(); limparTela(); break; //exibe o relatório de reservas
             //case 3: historicoReservas(); break; //não implementada
             case 0: limparTela(); break;
-            default: limparTela(); printf("Opção inválida.\n");
+            default: limparTela(); printf("OPÇÃO INVÁLIDA.\n");
         }
     } while (opcao != 0);
 }

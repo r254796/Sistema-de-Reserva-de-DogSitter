@@ -2,7 +2,7 @@
 #define ARQUIVOS_H
 
 void limparTela();
-int retornarMenu();
+void retornarMenu();
 
 int fazerLogin(); //não implementada
 void exibirMenuPrincipal();
