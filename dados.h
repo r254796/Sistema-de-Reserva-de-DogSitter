@@ -5,7 +5,7 @@
 #define MAX_EMAIL 100
 #define MAX_SENHA 50
 #define MAX_TEL 20
-#define MAX_PORTE 50
+#define MAX_PORTE 20
 #define MAX_DATA 20
 #define MAX_STATUS 20 
 
@@ -32,7 +32,7 @@ typedef struct Reserva {
     int duracao_horas;
     char nome_cachorro[MAX_NOME];
     float valor_total; 
-    char status[MAX_STATUS]; [cite_start]
+    char status[MAX_STATUS];
 } Reserva;
 
 extern Usuario* usuarios;

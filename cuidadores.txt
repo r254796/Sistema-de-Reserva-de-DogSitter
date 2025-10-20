@@ -1,1 +1,10 @@
-
+1;Ana Souza;25.00;Pequeno e medio
+2;Joao Lima;30.00;Todos os portes
+3;Carla Mendes;20.00;Apenas pequeno
+4;Pedro Santos;28.50;Apenas medio
+5;Lucas Ferreira;32.00;Apenas grande
+6;Mariana Oliveira;27.50;Medio e grande
+7;Beatriz Almeida;22.00;Pequeno e medio
+8;Rafael Costa;29.00;Todos os portes
+9;Gabriela Rocha;21.50;Apenas pequeno
+10;Felipe Gomes;31.00;Medio e grande
