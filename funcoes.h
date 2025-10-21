@@ -76,7 +76,6 @@ void listarCuidadores() {
     printf("\n");
 }
 
-
 void carregarCuidadores(){
     FILE *arq = fopen("cuidadores.txt", "r");
     if (arq == NULL) {
@@ -86,11 +85,15 @@ void carregarCuidadores(){
     
     Cuidador temp;
 
-    while (fscanf(arq, "%d;%[^;];%f;%[^\n]\n",
+    while (fscanf(arq, "%d;%[^;];%f;%[^;];%[^;];%d;%d;%[^\n]\n",
                   &temp.id,
                   temp.nome,
                   &temp.valor_hora,
-                  temp.porte_aceito) == 4) {
+                  temp.porte_aceito,
+                  temp.dias_expediente,
+                  &temp.hora_inicio_expediente,
+                  &temp.hora_fim_expediente,
+                  temp.experiencia) == 8) {
 
         cuidadores = (Cuidador*) realloc(cuidadores, (totalCuidadores + 1) * sizeof(Cuidador));
         if (cuidadores == NULL) {
@@ -103,7 +106,6 @@ void carregarCuidadores(){
     }
 
     fclose(arq);
-    printf("%d Cuidadores carregados com sucesso.\n", totalCuidadores);
 }
 
 
@@ -117,15 +119,16 @@ void carregarReservas() {
     Reserva temp;
     int maxId = 0;
     
-    while (fscanf(arq, "%d;%d;%d;%[^;];%d;%[^;];%f;%[^\n]\n", 
+    while (fscanf(arq, "%d;%d;%d;%[^;];%[^;];%d;%[^;];%f;%[^\n]\n", 
                   &temp.id, 
                   &temp.id_usuario, 
                   &temp.id_cuidador,
-                  temp.data_hora_inicio,
+                  temp.data,
+                  temp.hora,
                   &temp.duracao_horas,
                   temp.nome_cachorro,
                   &temp.valor_total,
-                  temp.status) == 8) {
+                  temp.status) == 9) {
         
         reservas = (Reserva*) realloc(reservas, (totalReservas + 1) * sizeof(Reserva));
         if (reservas == NULL) {
@@ -143,7 +146,6 @@ void carregarReservas() {
     
     
     fclose(arq);
-    printf("%d reservas carregadas com sucesso.\n", totalReservas);
 }
 
 
@@ -155,11 +157,12 @@ void salvarReservas() {
     }
     
     for (int i = 0; i < totalReservas; i++) {
-        fprintf(arq, "%d;%d;%d;%s;%d;%s;%.2f;%s\n", 
+        fprintf(arq, "%d;%d;%d;%s;%s;%d;%s;%.2f;%s\n", 
                 reservas[i].id, 
                 reservas[i].id_usuario, 
                 reservas[i].id_cuidador,
-                reservas[i].data_hora_inicio,
+                reservas[i].data,
+                reservas[i].hora,
                 reservas[i].duracao_horas,
                 reservas[i].nome_cachorro,
                 reservas[i].valor_total,
@@ -167,7 +170,6 @@ void salvarReservas() {
     }
     
     fclose(arq);
-    printf("Dados de reservas salvos em reservas.txt.\n");
 }
 
 
@@ -176,7 +178,6 @@ void inicializarDados() {
     //carregarUsuarios(); //não implementada
     carregarCuidadores();
     carregarReservas();
-    printf("\nSistema pronto para uso.\n\n");
 }
 
 void liberarMemoria() {

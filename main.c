@@ -20,6 +20,7 @@ int main() {
     int opcao;
 
     inicializarDados();
+    limparTela();
 
     do{
         printf("=============================================\n");
@@ -45,7 +46,7 @@ int main() {
                     }
                     break;
                 case 0:
-                    printf("\nSaindo do sistema... Até logo!\n");
+                    printf("Saindo do sistema... Até logo!\n");
                     //salvarUsuarios(); //não implementado
                     //salvarCuidadores(); //não implementado
                     salvarReservas();

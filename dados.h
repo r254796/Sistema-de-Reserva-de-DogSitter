@@ -1,12 +1,15 @@
 #ifndef DADOS_H
 #define DADOS_H
 
-#define MAX_NOME 100
+#define MAX_NOME 25
 #define MAX_EMAIL 100
 #define MAX_SENHA 50
 #define MAX_TEL 20
 #define MAX_PORTE 20
-#define MAX_DATA 20
+#define MAX_EXPEDIENTE 50
+#define MAX_DATA 12
+#define MAX_HORA 12
+#define MAX_EXPERIENCIA 50
 #define MAX_STATUS 20 
 
 typedef struct Usuario {
@@ -22,13 +25,18 @@ typedef struct Cuidador {
     char nome[MAX_NOME];
     float valor_hora;
     char porte_aceito[MAX_PORTE]; 
+    char dias_expediente[MAX_EXPEDIENTE];
+    int hora_inicio_expediente;
+    int hora_fim_expediente;
+    char experiencia[MAX_EXPERIENCIA];
 } Cuidador;
 
 typedef struct Reserva {
     int id;
     int id_usuario;
     int id_cuidador;
-    char data_hora_inicio[MAX_DATA]; 
+    char data[MAX_DATA];
+    char hora[MAX_HORA];
     int duracao_horas;
     char nome_cachorro[MAX_NOME];
     float valor_total; 
