@@ -32,6 +32,7 @@ int main() {
         printf("=============================================\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
+        while(getchar() != '\n'); //limpa o buffer
 
             switch (opcao) {
                 case 1:
@@ -53,6 +54,7 @@ int main() {
                     liberarMemoria();
                     break;
                 default:
+                    limparTela();
                     printf("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.\n");
             }
     } while(opcao != 0);

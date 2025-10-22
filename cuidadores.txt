@@ -1,10 +1,10 @@
-1;Ana Mendes;25.00;Pequeno e médio;Segunda a sábado;8;18;2 anos com cães pequenos
-2;Lucas Silva;30.00;Médio e grande;Segunda a sexta;9;17;3 anos com cães de grande porte
-3;Beatriz Ramos;28.00;Pequeno;Segunda a domingo;7;19;1 ano com filhotes e cães idosos
-4;Rafael Lima;35.00;Médio e grande;Terça a domingo;10;20;4 anos com adestramento básico
-5;Camila Alves;27.00;Pequeno e médio;Segunda a sábado;8;16;2 anos com cães de apartamento
-6;Pedro Duarte;32.00;Grande;Segunda a sexta;12;20;5 anos em canil profissional
-7;Juliana Pinto;24.00;Pequeno;Segunda a domingo;6;18;3 anos com raças toy
-8;Thiago Campos;29.00;Médio;Quarta a domingo;10;22;2 anos com cães de porte médio ativo
-9;Fernanda Souza;26.00;Pequeno e médio;Segunda a sábado;9;18;1 ano com socialização de cães
-10;Bruno Araujo;33.00;Médio e grande;Segunda a sexta;7;15;6 anos com cães esportivos
+1;Ana Mendes;25.00;Pequeno e médio;Segunda a sábado;08:00;18:00;2 anos com cães pequenos
+2;Lucas Silva;30.00;Médio e grande;Segunda a sexta;09:00;17:00;3 anos com cães de grande porte
+3;Beatriz Ramos;28.00;Pequeno;Segunda a domingo;07:00;19:00;1 ano com filhotes e cães idosos
+4;Rafael Lima;35.00;Médio e grande;Terça a domingo;10:00;20:00;4 anos com adestramento básico
+5;Camila Alves;27.00;Pequeno e médio;Segunda a sábado;08:00;16:00;2 anos com cães de apartamento
+6;Pedro Duarte;32.00;Grande;Segunda a sexta;12:00;20:00;5 anos em canil profissional
+7;Juliana Pinto;24.00;Pequeno;Segunda a domingo;06:00;18:00;3 anos com raças toy
+8;Thiago Campos;29.00;Médio;Quarta a domingo;10:00;22:00;2 anos com cães de porte médio ativo
+9;Fernanda Souza;26.00;Pequeno e médio;Segunda a sábado;09:00;18:00;1 ano com socialização de cães
+10;Bruno Araujo;33.00;Médio e grande;Segunda a sexta;07:00;15:00;6 anos com cães esportivos

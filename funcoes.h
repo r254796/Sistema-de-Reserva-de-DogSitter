@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "dados.h"
 #include "arquivos.h"
 
@@ -20,7 +21,7 @@ void retornarMenu(){
     while(getchar() != '\n'); //limpa o buffer
 
     switch(opcao){
-        case 0: printf("Saindo...\n"); exit(0);
+        case 0: liberarMemoria(); printf("Saindo...\n"); exit(0);
         case 1: limparTela(); break;
         default: printf("OPÇÃO INVÁLIDA.\n\n");
     }
@@ -36,8 +37,8 @@ void exibirMenuPrincipal(){
         printf("=============================================\n");
         printf("          MENU PRINCIPAL DO USUÁRIO\n");
         printf("=============================================\n");
-        printf("1 - Ver cuidadores disponíveis\n");
-        printf("2 - Buscar cuidador por data\n");
+        printf("1 - Ver lista de cuidadores\n");
+        printf("2 - Buscar cuidadores disponíveis por data\n");
         printf("3 - Ver detalhes de um cuidador\n");
         printf("4 - Fazer uma reserva\n");
         printf("5 - Consultar minhas reservas\n");
@@ -52,8 +53,10 @@ void exibirMenuPrincipal(){
 
         switch (opcao) {
             case 1: limparTela(); listarCuidadores(); retornarMenu(); break; //exibe a lista de cuidadores
+            case 2: limparTela(); exibirMenuBuscarCuidadorPorData(); retornarMenu(); break;
+            case 3: limparTela(); exibirMenuDetalhesCuidador(); retornarMenu(); break;
             case 7: limparTela(); exibirMenuRelatorios(); break;
-            case 0: printf("Saindo...\n"); exit(0);
+            case 0: liberarMemoria(); printf("Saindo...\n"); exit(0);
             default: limparTela(); printf("OPÇÃO INVÁLIDA.\n");
         }
 
@@ -76,6 +79,244 @@ void listarCuidadores() {
     printf("\n");
 }
 
+
+int validarData(char data[]) {
+    int dia, mes, ano, diasNoMes;
+
+    // Verifica tamanho exato e a posição das barras
+    if (strlen(data) != 10 || data[2] != '/' || data[5] != '/') {
+        printf("DATA EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
+        return 0;
+    }
+
+    // Verifica se todos os outros caracteres são dígitos
+    for (int i = 0; i < 10; i++) {
+        if (i == 2 || i == 5) continue;
+        if (!isdigit(data[i])) {
+            printf("DATA EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
+            return 0;
+        }
+    }
+
+    sscanf(data, "%2d/%2d/%4d", &dia, &mes, &ano);
+
+    // Verifica validade dos valores
+    if (ano < 1 || mes < 1 || mes > 12 || dia < 1) {
+        printf("DATA INVÁLIDA. TENTE NOVAMENTE.\n\n");
+        return 0;
+    }
+
+    // Dias no mês
+    switch (mes) {
+        case 2:
+            // Ano bissexto
+            if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0))
+                diasNoMes = 29;
+            else
+                diasNoMes = 28;
+            break;
+        case 4: case 6: case 9: case 11:
+            diasNoMes = 30;
+            break;
+        default:
+            diasNoMes = 31;
+    }
+
+    if (dia > diasNoMes) {
+        printf("DATA INVÁLIDA. TENTE NOVAMENTE.\n\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+
+int validarHorario(char horario[]){
+    int horas, minutos;
+
+    if(strlen(horario) != 5 || horario[2] != ':'){
+        printf("HORÁRIO EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
+        return 0;
+    }
+
+    for(int i = 0; i < 5; i++){
+        if(i == 2)
+            continue;
+        if(!isdigit(horario[i])){
+            printf("HORÁRIO EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
+            return 0;
+        }
+    }
+
+    /*verifica se o horário está no formato correto*/
+    if(sscanf(horario, "%d:%d", &horas, &minutos) != 2){
+        printf("HORÁRIO EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
+        return 0;
+    }
+    
+    /*verifica se o horário existe*/
+    if(horas > 23 || minutos > 59 || minutos < 0 || horas < 0){
+        printf("HORÁRIO INVÁLIDO. TENTE NOVAMENTE.\n\n");
+        return 0;
+    }
+    else return 1;
+}
+
+
+int horaParaMinutos(char horario[]) {
+    int horas, minutos;
+    sscanf(horario, "%d:%d", &horas, &minutos);
+    return horas * 60 + minutos;
+}
+
+
+/*recebe o id do cuidador e retorna o índice dele no vetor*/
+int verificaIndiceCuidador(int idCuidadorBuscado){
+    for(int i = 0; i < totalCuidadores; i++){
+        if(cuidadores[i].id == idCuidadorBuscado){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+/*verifica se o cuidador possui uma reserva ativa na data e hora recebida*/
+int buscarCuidadorPorData(int idCuidadorBuscado, char dataBuscada[], char horaBuscada[], int duracaoBuscada){
+    int horaReservaMinutos, horaBuscadaMinutos, duracaoMinutos, horaInicioExpedMinutos, horaFimExpedMinutos, iCuidadorBuscado;
+
+    iCuidadorBuscado = verificaIndiceCuidador(idCuidadorBuscado); //verifica se o cuidador buscado existe
+    if(iCuidadorBuscado == -1){
+        return 0;
+    } 
+
+    /*verifica se o cuidador está disponível na hora e data passadas analisando as reservas já feitas*/
+    for(int i = 0; i < totalReservas; i++){
+        horaReservaMinutos = horaParaMinutos(reservas[i].hora);
+        horaBuscadaMinutos = horaParaMinutos(horaBuscada);
+        horaInicioExpedMinutos = horaParaMinutos(cuidadores[iCuidadorBuscado].hora_inicio_expediente);
+        horaFimExpedMinutos = horaParaMinutos(cuidadores[iCuidadorBuscado].hora_fim_expediente);
+
+        if(horaInicioExpedMinutos > horaBuscadaMinutos || horaFimExpedMinutos - 60 < horaBuscadaMinutos || horaBuscadaMinutos + (duracaoBuscada * 60) > horaFimExpedMinutos) //verifica se a hora buscada está dentro do expediente do cuidador
+            return 0;
+
+        if(reservas[i].id_cuidador != idCuidadorBuscado) // verifica se o cuidador buscado não é o mesmo do cuidador da reserva
+            continue;
+
+        if(strcmp(reservas[i].status, "Cancelada") == 0) // verifica se a reserva foi cancelada, podendo ser considerada como horário disponível caso sim
+            continue;
+        
+        if(strcmp(reservas[i].data, dataBuscada) != 0) //verifica se a data buscada não é a mesma da data da reserva
+            continue;
+
+
+        /*verifica se a hora buscada não se encontra entre o período da reserva*/
+        if((horaReservaMinutos > horaBuscadaMinutos) || horaBuscadaMinutos >= horaReservaMinutos + (reservas[i].duracao_horas * 60)){
+            if(horaBuscadaMinutos + duracaoBuscada * 60 <= horaReservaMinutos)
+                continue;
+            else
+                return 0;
+        }
+        else
+            return 0;
+    }
+    return 1;
+}
+
+void exibirMenuBuscarCuidadorPorData(){
+    char dataBuscada[MAX_DATA];
+    char horaBuscada[MAX_HORA];
+    int i;
+    int cuidadorDisponivel;
+    int totalCuidadoresDisponiveis = 0;
+    int duracaoBuscada;
+    
+    printf("=============================================\n");
+    printf("          BUSCAR CUIDADORES POR DATA\n");
+    printf("=============================================\n");
+
+    do{
+        printf("Insira a data (dd/mm/aaaa): ");
+        scanf("%11s", dataBuscada);
+        while(getchar() != '\n'); //limpa o buffer
+    } while(!(validarData(dataBuscada)));
+
+    do{
+        printf("Insira o horário (hh:mm): ");
+        scanf("%6s", horaBuscada);
+        while(getchar() != '\n'); //limpa o buffer
+    } while(!(validarHorario(horaBuscada)));
+
+    do{
+        printf("---------------------------------------------\n");
+        printf("             DURAÇÃO DA SESSÃO\n");
+        printf("---------------------------------------------\n");
+        for(i = 1; i <= 8; i+=2){
+            printf("[%d] - %d hora(s) \t[%d] - %d hora(s)\n", i, i, i+1, i+1);
+        }
+        printf("\nEscolha a duração da sessão: ");
+        scanf("%d", &duracaoBuscada);
+        while(getchar() != '\n'); //limpa o buffer
+
+        if(duracaoBuscada > 8 || duracaoBuscada < 1){
+            limparTela();
+            printf("DURAÇÃO DE SESSÃO INVÁLIDA.\n");
+        }
+
+    } while(duracaoBuscada < 1 || duracaoBuscada > 8);
+
+    limparTela();
+    printf("=======================================================\n");
+    printf("                CUIDADORES ENCONTRADOS\n");
+    printf("=======================================================\n");
+    printf("DATA: %s   HORÁRIO: %s   DURAÇÃO: %d horas(s)\n", dataBuscada, horaBuscada, duracaoBuscada);
+    printf("-------------------------------------------------------\n");
+
+    /*para cada cuidador, verifica se ele está disponível no horário e exibe as informações dele*/
+    for(i = 0; i < totalCuidadores; i++){
+        if(cuidadorDisponivel = buscarCuidadorPorData(cuidadores[i].id, dataBuscada, horaBuscada, duracaoBuscada)){
+            printf("%d - %s - (%.2f/h)\n", cuidadores[i].id, cuidadores[i].nome, cuidadores[i].valor_hora);
+            totalCuidadoresDisponiveis += 1;
+        }
+    }
+    if(totalCuidadoresDisponiveis == 0){
+        printf("NENHUM CUIDADOR ENCONTRADO NESSA DATA E HORÁRIO.\n\n");
+    }
+    else
+        printf("\nTOTAL DE CUIDADORES ENCONTRADOS: %d\n\n", totalCuidadoresDisponiveis);
+
+}
+
+
+void exibirMenuDetalhesCuidador(){
+    int idCuidadorBuscado;
+    int iCuidadorBuscado;
+
+    do{
+        printf("===============================================================\n");
+        printf("                      DETALHES DO CUIDADOR\n");
+        printf("===============================================================\n");
+        printf("Insira o id do cuidador para saber mais detalhes sobre ele: ");
+        scanf("%d", &idCuidadorBuscado);
+        while(getchar() != '\n'); //limpa o buffer
+        
+        iCuidadorBuscado = verificaIndiceCuidador(idCuidadorBuscado);
+        if(iCuidadorBuscado != -1){
+            printf("\nNome: %s\n", cuidadores[iCuidadorBuscado].nome);
+            printf("Valor/hora: R$%.2f\n", cuidadores[iCuidadorBuscado].valor_hora);
+            printf("Porte aceito: %s\n", cuidadores[iCuidadorBuscado].porte_aceito);
+            printf("Disponibilidade: %s, %s às %s\n", cuidadores[iCuidadorBuscado].dias_expediente, cuidadores[iCuidadorBuscado].hora_inicio_expediente, cuidadores[iCuidadorBuscado].hora_fim_expediente);
+            printf("Experiência: %s\n\n", cuidadores[iCuidadorBuscado].experiencia);
+        }
+        else{
+            limparTela();
+            printf("ID DE CUIDADOR INVÁLIDO. TENTE NOVAMENTE.\n");
+        }
+    } while(iCuidadorBuscado == -1);
+
+}
+
+
 void carregarCuidadores(){
     FILE *arq = fopen("cuidadores.txt", "r");
     if (arq == NULL) {
@@ -85,14 +326,14 @@ void carregarCuidadores(){
     
     Cuidador temp;
 
-    while (fscanf(arq, "%d;%[^;];%f;%[^;];%[^;];%d;%d;%[^\n]\n",
+    while (fscanf(arq, "%d;%[^;];%f;%[^;];%[^;];%[^;];%[^;];%[^\n]\n",
                   &temp.id,
                   temp.nome,
                   &temp.valor_hora,
                   temp.porte_aceito,
                   temp.dias_expediente,
-                  &temp.hora_inicio_expediente,
-                  &temp.hora_fim_expediente,
+                  temp.hora_inicio_expediente,
+                  temp.hora_fim_expediente,
                   temp.experiencia) == 8) {
 
         cuidadores = (Cuidador*) realloc(cuidadores, (totalCuidadores + 1) * sizeof(Cuidador));
@@ -153,7 +394,7 @@ void salvarReservas() {
     FILE *arq = fopen("reservas.txt", "w"); 
     if (arq == NULL) {
         perror("Erro ao abrir reservas.txt para salvar");
-        return;
+        exit(1);
     }
     
     for (int i = 0; i < totalReservas; i++) {

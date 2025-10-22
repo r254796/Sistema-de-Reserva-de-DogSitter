@@ -26,8 +26,8 @@ typedef struct Cuidador {
     float valor_hora;
     char porte_aceito[MAX_PORTE]; 
     char dias_expediente[MAX_EXPEDIENTE];
-    int hora_inicio_expediente;
-    int hora_fim_expediente;
+    char hora_inicio_expediente[MAX_HORA];
+    char hora_fim_expediente[MAX_HORA];
     char experiencia[MAX_EXPERIENCIA];
 } Cuidador;
 
