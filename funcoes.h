@@ -178,7 +178,7 @@ int verificaIndiceCuidador(int idCuidadorBuscado){
 
 /*verifica se o cuidador possui uma reserva ativa na data e hora recebida*/
 int buscarCuidadorPorData(int idCuidadorBuscado, char dataBuscada[], char horaBuscada[], int duracaoBuscada){
-    int horaReservaMinutos, horaBuscadaMinutos, duracaoMinutos, horaInicioExpedMinutos, horaFimExpedMinutos, iCuidadorBuscado;
+    int horaReservaMinutos, horaBuscadaMinutos, duracaoBuscadaMinutos, horaInicioExpedMinutos, horaFimExpedMinutos, iCuidadorBuscado;
 
     iCuidadorBuscado = verificaIndiceCuidador(idCuidadorBuscado); //verifica se o cuidador buscado existe
     if(iCuidadorBuscado == -1){
@@ -191,8 +191,9 @@ int buscarCuidadorPorData(int idCuidadorBuscado, char dataBuscada[], char horaBu
         horaBuscadaMinutos = horaParaMinutos(horaBuscada);
         horaInicioExpedMinutos = horaParaMinutos(cuidadores[iCuidadorBuscado].hora_inicio_expediente);
         horaFimExpedMinutos = horaParaMinutos(cuidadores[iCuidadorBuscado].hora_fim_expediente);
+        duracaoBuscadaMinutos = duracaoBuscada * 60;
 
-        if(horaInicioExpedMinutos > horaBuscadaMinutos || horaFimExpedMinutos - 60 < horaBuscadaMinutos || horaBuscadaMinutos + (duracaoBuscada * 60) > horaFimExpedMinutos) //verifica se a hora buscada está dentro do expediente do cuidador
+        if(horaInicioExpedMinutos > horaBuscadaMinutos || horaFimExpedMinutos - 60 < horaBuscadaMinutos || horaBuscadaMinutos + duracaoBuscadaMinutos > horaFimExpedMinutos) //verifica se a hora buscada está dentro do expediente do cuidador
             return 0;
 
         if(reservas[i].id_cuidador != idCuidadorBuscado) // verifica se o cuidador buscado não é o mesmo do cuidador da reserva
@@ -207,7 +208,7 @@ int buscarCuidadorPorData(int idCuidadorBuscado, char dataBuscada[], char horaBu
 
         /*verifica se a hora buscada não se encontra entre o período da reserva*/
         if((horaReservaMinutos > horaBuscadaMinutos) || horaBuscadaMinutos >= horaReservaMinutos + (reservas[i].duracao_horas * 60)){
-            if(horaBuscadaMinutos + duracaoBuscada * 60 <= horaReservaMinutos)
+            if(horaBuscadaMinutos + duracaoBuscadaMinutos <= horaReservaMinutos)
                 continue;
             else
                 return 0;
