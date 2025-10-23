@@ -4,6 +4,7 @@
 int verificaIndiceCuidador(int idCuidadorBuscado);
 int buscarCuidadorPorData(int idCuidadorBuscado, char dataBuscada[], char horaBuscada[], int duracaoBuscada);
 void exibirMenuBuscarCuidadorPorData();
+void receberInformacoesDeBusca(char dataBuscada[], char horaBuscada[], int *duracaoBuscada);
 void exibirMenuDetalhesCuidador();
 
 int horaParaMinutos(char horario[]);

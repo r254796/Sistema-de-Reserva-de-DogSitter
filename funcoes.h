@@ -223,17 +223,9 @@ int buscarCuidadorPorData(int idCuidadorBuscado, char dataBuscada[], char horaBu
     return 1;
 }
 
-void exibirMenuBuscarCuidadorPorData(){
-    char dataBuscada[MAX_DATA];
-    char horaBuscada[MAX_HORA];
+//modifica o valor das variáveis passadas nos parâmetros para as informações de busca inseridas pelo usuário
+void receberInformacoesDeBusca(char dataBuscada[], char horaBuscada[], int *duracaoBuscada){
     int i;
-    int cuidadorDisponivel;
-    int totalCuidadoresDisponiveis = 0;
-    int duracaoBuscada;
-    
-    printf("=============================================\n");
-    printf("          BUSCAR CUIDADORES POR DATA\n");
-    printf("=============================================\n");
 
     do{
         printf("Insira a data (dd/mm/aaaa): ");
@@ -255,24 +247,40 @@ void exibirMenuBuscarCuidadorPorData(){
             printf("[%d] - %d hora(s) \t[%d] - %d hora(s)\n", i, i, i+1, i+1);
         }
         printf("\nEscolha a duração da sessão: ");
-        scanf("%d", &duracaoBuscada);
+        scanf("%d", duracaoBuscada);
         while(getchar() != '\n'); //limpa o buffer
 
-        if(duracaoBuscada > 8 || duracaoBuscada < 1){
+        if(*duracaoBuscada > 8 || *duracaoBuscada < 1){
             limparTela();
             printf("DURAÇÃO DE SESSÃO INVÁLIDA.\n");
         }
 
-    } while(duracaoBuscada < 1 || duracaoBuscada > 8);
+    } while(*duracaoBuscada < 1 || *duracaoBuscada > 8);
+}
 
+
+void exibirMenuBuscarCuidadorPorData(){
+    char dataBuscada[MAX_DATA];
+    char horaBuscada[MAX_HORA];
+    int duracaoBuscada;
+    int cuidadorDisponivel;
+    int totalCuidadoresDisponiveis = 0;
+    int i;
+    
+    printf("=============================================\n");
+    printf("          BUSCAR CUIDADORES POR DATA\n");
+    printf("=============================================\n");
+
+    receberInformacoesDeBusca(dataBuscada, horaBuscada, &duracaoBuscada);
     limparTela();
+
     printf("=======================================================\n");
     printf("                CUIDADORES ENCONTRADOS\n");
     printf("=======================================================\n");
     printf("DATA: %s   HORÁRIO: %s   DURAÇÃO: %d horas(s)\n", dataBuscada, horaBuscada, duracaoBuscada);
     printf("-------------------------------------------------------\n");
 
-    /*para cada cuidador, verifica se ele está disponível no horário e exibe as informações dele*/
+    /*para cada cuidador, verifica se ele está disponível no horário e data e exibe as informações dele*/
     for(i = 0; i < totalCuidadores; i++){
         if(cuidadorDisponivel = buscarCuidadorPorData(cuidadores[i].id, dataBuscada, horaBuscada, duracaoBuscada)){
             printf("%d - %s - (%.2f/h)\n", cuidadores[i].id, cuidadores[i].nome, cuidadores[i].valor_hora);
@@ -300,6 +308,7 @@ void exibirMenuDetalhesCuidador(){
         scanf("%d", &idCuidadorBuscado);
         while(getchar() != '\n'); //limpa o buffer
         
+        /*verifica se o cuidador existe e imprime na tela as informações dele*/
         iCuidadorBuscado = verificaIndiceCuidador(idCuidadorBuscado);
         if(iCuidadorBuscado != -1){
             printf("\nNome: %s\n", cuidadores[iCuidadorBuscado].nome);
