@@ -134,11 +134,11 @@ int validarData(char data[]) {
 int validarHorario(char horario[]){
     int horas, minutos;
 
+    /*verifica se o horário está no formato correto*/
     if(strlen(horario) != 5 || horario[2] != ':'){
         printf("HORÁRIO EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
         return 0;
     }
-
     for(int i = 0; i < 5; i++){
         if(i == 2)
             continue;
@@ -147,14 +147,9 @@ int validarHorario(char horario[]){
             return 0;
         }
     }
-
-    /*verifica se o horário está no formato correto*/
-    if(sscanf(horario, "%d:%d", &horas, &minutos) != 2){
-        printf("HORÁRIO EM FORMATO INVÁLIDO. TENTE NOVAMENTE.\n\n");
-        return 0;
-    }
     
     /*verifica se o horário existe*/
+    sscanf(horario, "%d:%d", &horas, &minutos);
     if(horas > 23 || minutos > 59 || minutos < 0 || horas < 0){
         printf("HORÁRIO INVÁLIDO. TENTE NOVAMENTE.\n\n");
         return 0;
