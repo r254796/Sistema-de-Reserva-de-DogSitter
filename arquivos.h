@@ -35,5 +35,11 @@ void relatorioReservas();
 void historicoReservas(); //não implementada
 
 
+void novaReserva(int idUsuario);
+void listarReservasUsuario(int idUsuario);
+void cancelarReserva(int idReserva);
+
+
+
 #endif 
 
