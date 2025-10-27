@@ -477,3 +477,162 @@ void relatorioReservas() {
     printf("Reservas ativas: %d\n", ativas);
     printf("Reservas canceladas: %d\n\n", canceladas);
 }
+
+
+//FEITO POR GABRIEL
+/* --- Início: implementações das funções de Reservas (Pessoa 3) --- */
+
+/* cria uma nova reserva para o usuário idUsuario */
+void novaReserva(int idUsuario) {
+    int idCuidador;
+    char data[MAX_DATA];
+    char hora[MAX_HORA];
+    int duracao;
+    char nomeCachorro[MAX_NOME];
+    int idxCuidador;
+
+    printf("Digite o ID do cuidador: ");
+    if (scanf("%d%*c", &idCuidador) != 1) {
+        printf("Entrada inválida.\n");
+        return;
+    }
+
+    idxCuidador = verificaIndiceCuidador(idCuidador);
+    if (idxCuidador == -1) {
+        printf("Cuidador com ID %d não encontrado.\n", idCuidador);
+        return;
+    }
+
+    printf("Digite a data (dd/mm/aaaa): ");
+    if (fgets(data, MAX_DATA, stdin) == NULL) return;
+    data[strcspn(data, "\n")] = '\0';
+
+    printf("Digite a hora (hh:mm): ");
+    if (fgets(hora, MAX_HORA, stdin) == NULL) return;
+    hora[strcspn(hora, "\n")] = '\0';
+
+    printf("Digite a duração em horas (ex: 2): ");
+    if (scanf("%d%*c", &duracao) != 1) {
+        printf("Entrada inválida.\n");
+        return;
+    }
+
+    /* verificar disponibilidade usando a função já existente */
+    int disponivel = buscarCuidadorPorData(idCuidador, data, hora, duracao);
+    if (!disponivel) {
+        printf("Cuidador indisponível nesse horário/data.\n");
+        return;
+    }
+
+    printf("Nome do cachorro: ");
+    if (fgets(nomeCachorro, MAX_NOME, stdin) == NULL) return;
+    nomeCachorro[strcspn(nomeCachorro, "\n")] = '\0';
+
+    /* calcular valor total */
+    float valor_hora = cuidadores[idxCuidador].valor_hora;
+    float valor_total = valor_hora * (float)duracao;
+
+    printf("Valor total: R$ %.2f\n", valor_total);
+    printf("Deseja confirmar a reserva? (S/N): ");
+    char opc;
+    if (scanf(" %c%*c", &opc) != 1) return;
+    if (opc != 'S' && opc != 's') {
+        printf("Reserva cancelada pelo usuário.\n");
+        return;
+    }
+
+    /* cria a Reserva */
+    Reserva nova;
+    /* gera id: pega maior id existente + 1 (evita duplicar caso tenha cancelamentos) */
+    int maxId = 0;
+    for (int i = 0; i < totalReservas; i++) if (reservas[i].id > maxId) maxId = reservas[i].id;
+    nova.id = maxId + 1;
+
+    nova.id_usuario = idUsuario;
+    nova.id_cuidador = idCuidador;
+    strncpy(nova.data, data, MAX_DATA-1); nova.data[MAX_DATA-1] = '\0';
+    strncpy(nova.hora, hora, MAX_HORA-1); nova.hora[MAX_HORA-1] = '\0';
+    nova.duracao_horas = duracao;
+    strncpy(nova.nome_cachorro, nomeCachorro, MAX_NOME-1); nova.nome_cachorro[MAX_NOME-1] = '\0';
+    nova.valor_total = valor_total;
+    strncpy(nova.status, "Ativa", MAX_STATUS-1); nova.status[MAX_STATUS-1] = '\0';
+
+    /* realoca vetor de reservas e adiciona */
+    Reserva *tmp = realloc(reservas, sizeof(Reserva) * (totalReservas + 1));
+    if (tmp == NULL) {
+        printf("Erro ao alocar memória para reserva.\n");
+        return;
+    }
+    reservas = tmp;
+    reservas[totalReservas] = nova;
+    totalReservas++;
+
+    /* persistir (se existir função salvarReservas) */
+    #ifdef SALVAR_RESERVAS_EXISTS
+    salvarReservas(); /* se implementada em outro módulo */
+    #else
+    /* tente chamar salvarReservas se estiver implementada no projeto */
+    #endif
+
+    printf("Reserva criada com sucesso! ID da reserva: %d\n", nova.id);
+}
+
+/* lista todas as reservas do usuário idUsuario */
+void listarReservasUsuario(int idUsuario) {
+    int encontrou = 0;
+    printf("Reservas do usuário (ID %d):\n", idUsuario);
+    printf("ID | CuidadorID | Data       | Hora   | Duracao | Nome do cachorro     | Valor    | Status\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < totalReservas; i++) {
+        if (reservas[i].id_usuario == idUsuario) {
+            encontrou = 1;
+            printf("%-3d| %-10d| %-11s| %-6s | %-7d | %-20s | R$%7.2f | %-8s\n",
+                   reservas[i].id,
+                   reservas[i].id_cuidador,
+                   reservas[i].data,
+                   reservas[i].hora,
+                   reservas[i].duracao_horas,
+                   reservas[i].nome_cachorro,
+                   reservas[i].valor_total,
+                   reservas[i].status);
+        }
+    }
+    if (!encontrou) {
+        printf("Nenhuma reserva encontrada para este usuário.\n");
+    }
+}
+
+/* cancela reserva com id igual a idReserva */
+void cancelarReserva(int idReserva) {
+    int idx = -1;
+    for (int i = 0; i < totalReservas; i++) {
+        if (reservas[i].id == idReserva) {
+            idx = i;
+            break;
+        }
+    }
+    if (idx == -1) {
+        printf("Reserva com ID %d não encontrada.\n", idReserva);
+        return;
+    }
+
+    if (strcmp(reservas[idx].status, "Cancelada") == 0) {
+        printf("Reserva já está cancelada.\n");
+        return;
+    }
+
+    /* altera status e zera valor, se desejado */
+    strncpy(reservas[idx].status, "Cancelada", MAX_STATUS-1);
+    reservas[idx].status[MAX_STATUS-1] = '\0';
+    /* opcional: definir valor_total = 0.0; (se o requisito exigir) */
+    /* reservas[idx].valor_total = 0.0f; */
+
+    /* persistir se houver função */
+    #ifdef SALVAR_RESERVAS_EXISTS
+    salvarReservas();
+    #endif
+
+    printf("Reserva %d cancelada com sucesso.\n", idReserva);
+}
+
+/* --- Fim: implementações das funções de Reservas (Pessoa 3) --- */
