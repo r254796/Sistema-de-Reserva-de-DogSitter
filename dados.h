@@ -52,5 +52,7 @@ extern int totalCuidadores;
 extern Reserva* reservas;
 extern int totalReservas;
 
+extern int usuarioLogadoID;
+
 
 #endif 
