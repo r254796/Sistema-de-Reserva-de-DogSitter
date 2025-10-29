@@ -34,6 +34,7 @@ void exibirMenuPrincipal(){
     int opcao;
     
     do{
+        opcao = -1;
         printf("=============================================\n");
         printf("          MENU PRINCIPAL DO USUÁRIO\n");
         printf("=============================================\n");
@@ -494,36 +495,29 @@ void novaReserva(int idUsuario) {
     char nomeCachorro[MAX_NOME];
     int idxCuidador;
 
+    printf("============================================\n");
+    printf("               FAZER RESERVA\n");
+    printf("============================================\n");
+
     printf("Digite o ID do cuidador: ");
     if (scanf("%d%*c", &idCuidador) != 1) {
-        printf("Entrada inválida.\n");
+        while(getchar() != '\n');
+        printf("Entrada inválida.\n\n");
         return;
     }
 
     idxCuidador = verificaIndiceCuidador(idCuidador);
     if (idxCuidador == -1) {
-        printf("Cuidador com ID %d não encontrado.\n", idCuidador);
+        printf("Cuidador com ID %d não encontrado.\n\n", idCuidador);
         return;
     }
 
-    printf("Digite a data (dd/mm/aaaa): ");
-    if (fgets(data, MAX_DATA, stdin) == NULL) return;
-    data[strcspn(data, "\n")] = '\0';
-
-    printf("Digite a hora (hh:mm): ");
-    if (fgets(hora, MAX_HORA, stdin) == NULL) return;
-    hora[strcspn(hora, "\n")] = '\0';
-
-    printf("Digite a duração em horas (ex: 2): ");
-    if (scanf("%d%*c", &duracao) != 1) {
-        printf("Entrada inválida.\n");
-        return;
-    }
+    receberInformacoesDeBusca(data, hora, &duracao);
 
     /* verificar disponibilidade usando a função já existente */
     int disponivel = buscarCuidadorPorData(idCuidador, data, hora, duracao);
     if (!disponivel) {
-        printf("Cuidador indisponível nesse horário/data.\n");
+        printf("Cuidador %d indisponível nesse horário/data.\n\n", idCuidador);
         return;
     }
 
@@ -535,12 +529,18 @@ void novaReserva(int idUsuario) {
     float valor_hora = cuidadores[idxCuidador].valor_hora;
     float valor_total = valor_hora * (float)duracao;
 
+    printf("\n-------------Resumo da reserva--------------\n");
+    printf("Cuidador: %s (ID %d)\n", cuidadores[idxCuidador].nome, idCuidador);
+    printf("Data: %s\n", data);
+    printf("Hora: %s\n", hora);
+    printf("Cachorro: %s\n", nomeCachorro);
     printf("Valor total: R$ %.2f\n", valor_total);
+    printf("--------------------------------------------\n\n");
     printf("Deseja confirmar a reserva? (S/N): ");
     char opc;
     if (scanf(" %c%*c", &opc) != 1) return;
     if (opc != 'S' && opc != 's') {
-        printf("Reserva cancelada pelo usuário.\n");
+        printf("Reserva cancelada pelo usuário.\n\n");
         return;
     }
 
@@ -563,7 +563,7 @@ void novaReserva(int idUsuario) {
     /* realoca vetor de reservas e adiciona */
     Reserva *tmp = realloc(reservas, sizeof(Reserva) * (totalReservas + 1));
     if (tmp == NULL) {
-        printf("Erro ao alocar memória para reserva.\n");
+        printf("Erro ao alocar memória para reserva.\n\n");
         return;
     }
     reservas = tmp;
@@ -572,7 +572,7 @@ void novaReserva(int idUsuario) {
 
     salvarReservas();
 
-    printf("Reserva criada com sucesso! ID da reserva: %d\n", nova.id);
+    printf("Reserva criada com sucesso! ID da reserva: %d\n\n", nova.id);
 }
 
 /* lista todas as reservas do usuário idUsuario */
