@@ -533,6 +533,7 @@ void novaReserva(int idUsuario) {
     printf("Cuidador: %s (ID %d)\n", cuidadores[idxCuidador].nome, idCuidador);
     printf("Data: %s\n", data);
     printf("Hora: %s\n", hora);
+    printf("Duração: %d hora(s)\n", duracao);
     printf("Cachorro: %s\n", nomeCachorro);
     printf("Valor total: R$ %.2f\n", valor_total);
     printf("--------------------------------------------\n\n");

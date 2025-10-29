@@ -49,7 +49,6 @@ int main() {
                 case 0:
                     printf("Saindo do sistema... Até logo!\n");
                     //salvarUsuarios(); //não implementado
-                    //salvarCuidadores(); //não implementado
                     salvarReservas();
                     liberarMemoria();
                     break;
