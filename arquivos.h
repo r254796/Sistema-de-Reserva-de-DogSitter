@@ -24,6 +24,7 @@ void inicializarDados();
 
 
 void salvarUsuarios(); //não implementada
+void salvarCuidadores();
 void salvarReservas();
 void liberarMemoria(); 
 
@@ -39,4 +40,5 @@ void listarReservasUsuario(int idUsuario);
 void cancelarReserva();
 
 #endif 
+
 
