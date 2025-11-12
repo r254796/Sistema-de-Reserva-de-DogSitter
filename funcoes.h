@@ -405,6 +405,7 @@ void carregarReservas() {
 }
 
 void carregarUsuarios() {
+    Usuario temp;
     FILE *arq = fopen("usuarios.txt", "r");
     if (arq == NULL) {
         printf("Arquivo usuarios.txt nao encontrado. Iniciando com 0 usuarios.\n");
@@ -609,7 +610,7 @@ void historicoReservas() {
     }
 
     for (int i = 0; i < totalReservas; i++) {
-        // Encontrar o nome do cuidador (opcional, mas útil para o relatório)
+        // Encontrar o nome do cuidador
         int idxCuidador = verificaIndiceCuidador(reservas[i].id_cuidador);
         char *nomeCuidador = (idxCuidador != -1) ? cuidadores[idxCuidador].nome : "Cuidador Desconhecido";
         
