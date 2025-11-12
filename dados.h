@@ -13,12 +13,20 @@
 #define MAX_STATUS 20 
 
 typedef struct Usuario {
-    int id;
+    int usuarioLogadoID; 
     char nome[MAX_NOME];
     char email[MAX_EMAIL];
     char senha[MAX_SENHA];
     char telefone[MAX_TEL];
 } Usuario;
+//usuario padrão
+Usuario usuarioLogado = {
+    .usuarioLogadoID = -1,  // ID -1 = sem usuário logado
+    .nome = "",
+    .email = "",
+    .senha = "",
+    .telefone = ""
+};
 
 typedef struct Cuidador {
     int id;
@@ -52,7 +60,6 @@ extern int totalCuidadores;
 extern Reserva* reservas;
 extern int totalReservas;
 
-extern int usuarioLogadoID;
 
 
 #endif 

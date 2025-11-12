@@ -21,42 +21,7 @@ int main() {
 
     inicializarDados();
     limparTela();
-
-    do{
-        printf("=============================================\n");
-        printf("      BEM-VINDO AO SISTEMA DE DOGSITTER\n");
-        printf("=============================================\n");
-        printf("1 - Cadastrar-se\n");
-        printf("2 - Fazer login\n");
-        printf("0 - Sair\n");
-        printf("=============================================\n");
-        printf("Escolha uma opção: ");
-        scanf("%d", &opcao);
-        while(getchar() != '\n'); //limpa o buffer
-
-            switch (opcao) {
-                case 1:
-                    limparTela();
-                    printf("Modulo de Cadastro (Pessoa 1) nao implementado.\n");
-                    break;
-                case 2: 
-                    usuarioLogadoID = 1; 
-                    if (usuarioLogadoID != -1) {
-                        limparTela();
-                        exibirMenuPrincipal(); 
-                    }
-                    break;
-                case 0:
-                    printf("Saindo do sistema... Até logo!\n");
-                    //salvarUsuarios(); //não implementado
-                    salvarReservas();
-                    liberarMemoria();
-                    break;
-                default:
-                    limparTela();
-                    printf("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.\n");
-            }
-    } while(opcao != 0);
+    menuPrincipal();
 
     return 0;
 }

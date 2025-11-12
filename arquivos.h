@@ -38,6 +38,14 @@ void historicoReservas(); //não implementada
 void novaReserva(int idUsuario);
 void listarReservasUsuario(int idUsuario);
 void cancelarReserva();
+void verificarCadastro(char email_buscado[MAX_EMAIL], int opcao);
+int verificarSenha(const char *email, const char *senha_digitada);
+void salvarUsuarios();
+void retornarMenu();
+void limparTela();
+void liberarMemoria();
+void salvarReservas();
+void exibirMenuPrincipal();
 
 #endif 
 
