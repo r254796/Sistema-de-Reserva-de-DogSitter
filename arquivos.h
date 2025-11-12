@@ -23,7 +23,7 @@ void carregarReservas();
 void inicializarDados(); 
 
 
-void salvarUsuarios(); //não implementada
+void salvarUsuarios(); 
 void salvarCuidadores();
 void salvarReservas();
 void liberarMemoria(); 
@@ -40,5 +40,6 @@ void listarReservasUsuario(int idUsuario);
 void cancelarReserva();
 
 #endif 
+
 
 
