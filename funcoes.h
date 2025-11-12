@@ -60,7 +60,13 @@ void exibirMenuPrincipal(){
             case 5: limparTela(); listarReservasUsuario(usuarioLogadoID); retornarMenu(); break;
             case 6: limparTela(); cancelarReserva(); retornarMenu(); break;
             case 7: limparTela(); exibirMenuRelatorios(); break;
-            case 0: liberarMemoria(); printf("Saindo...\n"); exit(0);
+            case 0: 
+                    salvarUsuarios();    // <--- ADICIONE
+                    salvarCuidadores();  // <--- ADICIONE
+                    salvarReservas();    // Já estava sendo chamada no `case 0` da função `retornarMenu`, mas é bom garantir aqui
+                    liberarMemoria(); 
+                    printf("Saindo...\n"); 
+                    exit(0);
             default: limparTela(); printf("OPÇÃO INVÁLIDA.\n");
         }
 
@@ -398,7 +404,77 @@ void carregarReservas() {
     fclose(arq);
 }
 
+void carregarUsuarios() {
+    FILE *arq = fopen("usuarios.txt", "r");
+    if (arq == NULL) {
+        printf("Arquivo usuarios.txt nao encontrado. Iniciando com 0 usuarios.\n");
+        return;
+    }
+    
+    while (fscanf(arq, "%d;%[^;];%[^;];%[^;];%[^\n]\n",
+                  &temp.id,
+                  temp.nome,
+                  temp.email,
+                  temp.senha,
+                  temp.telefone) == 5) { // Altere o número se a struct tiver mais/menos campos
+                      
+        // Realoca memória para adicionar o novo usuário
+        usuarios = (Usuario*) realloc(usuarios, (totalUsuarios + 1) * sizeof(Usuario));
+        if (usuarios == NULL) {
+            perror("Falha na alocacao de memoria ao carregar usuarios.");
+            exit(1);
+        }
 
+        usuarios[totalUsuarios] = temp;
+        totalUsuarios++;
+    }
+
+    fclose(arq);
+}
+
+void salvarUsuarios() {
+    FILE *arq = fopen("usuarios.txt", "w"); // Abre para escrita (sobrescreve)
+    if (arq == NULL) {
+        perror("Erro ao abrir usuarios.txt para salvar");
+        exit(1);
+    }
+    
+    for (int i = 0; i < totalUsuarios; i++) {
+        // Formato: id;nome;email;senha;telefone
+        // Deve corresponder ao formato usado no carregarUsuarios()
+        fprintf(arq, "%d;%s;%s;%s;%s\n",
+                usuarios[i].id,
+                usuarios[i].nome,
+                usuarios[i].email,
+                usuarios[i].senha,
+                usuarios[i].telefone);
+    }
+    
+    fclose(arq);
+}
+
+void salvarCuidadores() {
+    FILE *arq = fopen("cuidadores.txt", "w"); 
+    if (arq == NULL) {
+        perror("Erro ao abrir cuidadores.txt para salvar");
+        exit(1);
+    }
+    
+    for (int i = 0; i < totalCuidadores; i++) {
+        // Formato usado em carregarCuidadores: id;nome;valor_hora;porte_aceito;dias_expediente;hora_inicio_expediente;hora_fim_expediente;experiencia
+        fprintf(arq, "%d;%s;%.2f;%s;%s;%s;%s;%s\n",
+                cuidadores[i].id,
+                cuidadores[i].nome,
+                cuidadores[i].valor_hora,
+                cuidadores[i].porte_aceito,
+                cuidadores[i].dias_expediente,
+                cuidadores[i].hora_inicio_expediente,
+                cuidadores[i].hora_fim_expediente,
+                cuidadores[i].experiencia);
+    }
+    
+    fclose(arq);
+}
 void salvarReservas() {
     FILE *arq = fopen("reservas.txt", "w"); 
     if (arq == NULL) {
@@ -454,9 +530,9 @@ void exibirMenuRelatorios() {
         while(getchar() != '\n'); //limpa o buffer
 
         switch (opcao) {
-            //case 1: relatorioFaturamento(); break; //não implementada
-            case 2: limparTela(); relatorioReservas(); retornarMenu(); limparTela(); break; //exibe o relatório de reservas
-            //case 3: historicoReservas(); break; //não implementada
+            case 1: limparTela(); relatorioFaturamento(); retornarMenu(); limparTela(); break; 
+            case 2: limparTela(); relatorioReservas(); retornarMenu(); limparTela(); break; 
+            case 3: limparTela(); historicoReservas(); retornarMenu(); limparTela(); break; 
             case 0: limparTela(); break;
             default: limparTela(); printf("OPÇÃO INVÁLIDA.\n");
         }
@@ -486,6 +562,68 @@ void relatorioReservas() {
 //FEITO POR GABRIEL
 /* --- Início: implementações das funções de Reservas (Pessoa 3) --- */
 
+void relatorioFaturamento() {
+    // 1. Criar um array para somar o faturamento de cada cuidador
+    float faturamentoPorCuidador[totalCuidadores];
+    for (int i = 0; i < totalCuidadores; i++) {
+        faturamentoPorCuidador[i] = 0.0;
+    }
+    
+    // 2. Iterar sobre todas as reservas
+    for (int i = 0; i < totalReservas; i++) {
+        // Apenas reservas "Ativa" ou "Concluida" geram faturamento
+        if (strcmp(reservas[i].status, "Ativa") == 0 || strcmp(reservas[i].status, "Concluida") == 0) {
+            
+            // 3. Encontrar o índice do cuidador (para somar no array auxiliar)
+            int idxCuidador = verificaIndiceCuidador(reservas[i].id_cuidador);
+            
+            if (idxCuidador != -1) {
+                faturamentoPorCuidador[idxCuidador] += reservas[i].valor_total;
+            }
+        }
+    }
+    
+    // 4. Exibir o relatório
+    printf("======================================\n");
+    printf("     FATURAMENTO TOTAL POR CUIDADOR\n");
+    printf("======================================\n");
+    printf("%-20s| %-15s\n", "CUIDADOR", "FATURAMENTO");
+    printf("--------------------------------------\n");
+    
+    for (int i = 0; i < totalCuidadores; i++) {
+        printf("%-20s| R$%.2f\n", cuidadores[i].nome, faturamentoPorCuidador[i]);
+    }
+    printf("\n");
+}
+
+// Em funcoes.c, abaixo de relatorioFaturamento()
+
+void historicoReservas() {
+    printf("==========================================\n");
+    printf("     HISTÓRICO COMPLETO DE RESERVAS (%d)\n", totalReservas);
+    printf("==========================================\n");
+    
+    if (totalReservas == 0) {
+        printf("Nenhuma reserva registrada no sistema.\n\n");
+        return;
+    }
+
+    for (int i = 0; i < totalReservas; i++) {
+        // Encontrar o nome do cuidador (opcional, mas útil para o relatório)
+        int idxCuidador = verificaIndiceCuidador(reservas[i].id_cuidador);
+        char *nomeCuidador = (idxCuidador != -1) ? cuidadores[idxCuidador].nome : "Cuidador Desconhecido";
+        
+        printf("----------------------------------------\n");
+        printf("ID Reserva: %d\n", reservas[i].id);
+        printf("Status: %s\n", reservas[i].status);
+        printf("Cuidador: %s (ID %d)\n", nomeCuidador, reservas[i].id_cuidador);
+        printf("Data e Hora: %s às %s\n", reservas[i].data, reservas[i].hora);
+        printf("Duração: %d horas\n", reservas[i].duracao_horas);
+        printf("Cachorro: %s\n", reservas[i].nome_cachorro);
+        printf("Valor Total: R$%.2f\n", reservas[i].valor_total);
+    }
+    printf("----------------------------------------\n\n");
+}
 /* cria uma nova reserva para o usuário idUsuario */
 void novaReserva(int idUsuario) {
     int idCuidador;
@@ -576,6 +714,7 @@ void novaReserva(int idUsuario) {
     printf("Reserva criada com sucesso! ID da reserva: %d\n\n", nova.id);
 }
 
+
 /* lista todas as reservas do usuário idUsuario */
 void listarReservasUsuario(int idUsuario) {
     int encontrou = 0;
@@ -649,3 +788,4 @@ void cancelarReserva() {
 }
 
 /* --- Fim: implementações das funções de Reservas (Pessoa 3) --- */
+
