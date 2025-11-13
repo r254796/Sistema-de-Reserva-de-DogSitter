@@ -15,6 +15,7 @@ void fazerLogin() {
     srand(time(NULL));
 
     do {
+        opcao = -1;
         printf("=============================================\n");
         printf("      BEM-VINDO AO SISTEMA DE DOGSITTER\n");
         printf("=============================================\n");
@@ -43,7 +44,7 @@ void fazerLogin() {
                 opcao = 3;
                 break;
 
-            case 2: {
+            case 2: 
                 char email_login[MAX_EMAIL];
                 char senha_login[MAX_SENHA];
 
@@ -68,7 +69,7 @@ void fazerLogin() {
                     opcao = 3;
                 }
                 break;
-            }
+            
 
             case 0:
                 printf("Saindo do sistema... Até logo!\n");
