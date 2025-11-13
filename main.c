@@ -21,7 +21,8 @@ int main() {
 
     inicializarDados();
     limparTela();
-    menuPrincipal();
+    fazerLogin();
+    exibirMenuPrincipal();
 
     return 0;
 }

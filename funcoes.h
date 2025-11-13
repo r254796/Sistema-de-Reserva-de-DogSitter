@@ -2,14 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "dados.h"
 #include "arquivos.h"
+
 
 void limparTela(){
     printf("\033[2J\033[H");
 }
-void menuPrincipal() {
+void fazerLogin() {
     int opcao;
+    srand(time(NULL));
 
     do {
         printf("=============================================\n");
@@ -26,33 +29,43 @@ void menuPrincipal() {
         switch (opcao) {
             case 1:
                 limparTela();
-                printf("insira o email:\n");
-                scanf("%s", usuarioLogado.email);
-                verificarCadastro(usuarioLogado.email, opcao);
-                printf("insira a senha:\n");
-                scanf("%s", usuarioLogado.senha);
-                printf("insira a telefone:\n");
-                scanf("%s", usuarioLogado.telefone);
+                printf("Insira o email:\n");
+                scanf("%99s", usuarioLogado.email);
+                if(verificarCadastro(usuarioLogado.email, opcao))
+                    break;
+                printf("Insira a senha:\n");
+                scanf("%49s", usuarioLogado.senha);
+                printf("Insira o telefone:\n");
+                scanf("%19s", usuarioLogado.telefone);
                 usuarioLogado.usuarioLogadoID = rand() % 10000;
                 salvarUsuarios();
+                limparTela();
+                opcao = 3;
                 break;
 
             case 2: {
                 char email_login[MAX_EMAIL];
                 char senha_login[MAX_SENHA];
-                printf("digite o email:\n");
-                scanf("%s", email_login);
-                verificarCadastro(email_login, opcao);
-                printf("digite a senha:\n");
-                scanf("%s", senha_login);
+
+                printf("Digite o email:\n");
+                scanf("%99s", email_login);
+
+                if(!verificarCadastro(email_login, opcao))
+                    break;
+                
+                printf("Digite a senha:\n");
+                scanf("%49s", senha_login);
 
                 if (verificarSenha(email_login, senha_login)) {
-                    printf("senha correta!\n");
-                    exibirMenuPrincipal();
+                    limparTela();
+                    printf("Senha correta!\n");
+                    opcao = 3;
                 } else {
-                    printf("senha incorreta, digite novamente:\n");
-                    scanf("%s", senha_login);
-                    verificarSenha(email_login, senha_login);
+                    do{printf("Senha incorreta, digite novamente:\n");
+                    scanf("%49s", senha_login);
+                    } while(!verificarSenha(email_login, senha_login));
+                    limparTela();
+                    opcao = 3;
                 }
                 break;
             }
@@ -61,13 +74,13 @@ void menuPrincipal() {
                 printf("Saindo do sistema... Até logo!\n");
                 salvarReservas();
                 liberarMemoria();
-                break;
+                exit(0);
 
             default:
                 limparTela();
                 printf("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.\n");
         }
-    } while(opcao != 0);
+    } while(opcao != 3);
 }
 /*Possibilita o usuário de retornar ao menu anterior ou sair do programa*/
 void retornarMenu(){
@@ -82,8 +95,8 @@ void retornarMenu(){
 
     switch(opcao){
         case 0: liberarMemoria(); printf("Saindo...\n"); exit(0);
-        case 1: limparTela(); menuPrincipal();
-        default: printf("OPÇÃO INVÁLIDA.\n\n");
+        case 1: limparTela(); break;
+        default: printf("OPÇÃO INVÁLIDA.\n\n"); break;
     }
 
     } while(opcao != 1 && opcao != 0);
@@ -121,8 +134,7 @@ void exibirMenuPrincipal(){
             case 6: limparTela(); cancelarReserva(); retornarMenu(); break;
             case 7: limparTela(); exibirMenuRelatorios(); break;
             case 0: 
-                    salvarUsuarios();    // <--- ADICIONE
-                    salvarCuidadores();  // <--- ADICIONE
+                    salvarCuidadores();
                     salvarReservas();    // Já estava sendo chamada no `case 0` da função `retornarMenu`, mas é bom garantir aqui
                     liberarMemoria(); 
                     printf("Saindo...\n"); 
@@ -401,7 +413,7 @@ void carregarCuidadores(){
     
     Cuidador temp;
 
-    while (fscanf(arq, "%d;%[^;];%f;%[^;];%[^;];%[^;];%[^;];%[^\n]\n",
+    while (fscanf(arq, "%d;%24[^;];%f;%19[^;];%49[^;];%11[^;];%11[^;];%49[^\n]\n",
                   &temp.id,
                   temp.nome,
                   &temp.valor_hora,
@@ -435,7 +447,7 @@ void carregarReservas() {
     Reserva temp;
     int maxId = 0;
     
-    while (fscanf(arq, "%d;%d;%d;%[^;];%[^;];%d;%[^;];%f;%[^\n]\n", 
+    while (fscanf(arq, "%d;%d;%d;%11[^;];%11[^;];%d;%24[^;];%f;%19[^\n]\n", 
                   &temp.id, 
                   &temp.id_usuario, 
                   &temp.id_cuidador,
@@ -463,7 +475,7 @@ void carregarReservas() {
     
     fclose(arq);
 }
-/*
+
 void carregarUsuarios() {
     Usuario temp;
     FILE *arq = fopen("usuarios.txt", "r");
@@ -472,8 +484,8 @@ void carregarUsuarios() {
         return;
     }
     
-    while (fscanf(arq, "%d;%[^;];%[^;];%[^;];%[^\n]\n",
-                  &temp.id,
+    while (fscanf(arq, "%d;%24[^;];%99[^;];%49[^;];%19[^\n]\n",
+                  &temp.usuarioLogadoID,
                   temp.nome,
                   temp.email,
                   temp.senha,
@@ -491,28 +503,7 @@ void carregarUsuarios() {
     }
 
     fclose(arq);
-} */
-
-/*void salvarUsuarios() {
-    FILE *arq = fopen("usuarios.txt", "w"); // Abre para escrita (sobrescreve)
-    if (arq == NULL) {
-        perror("Erro ao abrir usuarios.txt para salvar");
-        exit(1);
-    }
-    
-    for (int i = 0; i < totalUsuarios; i++) {
-        // Formato: id;nome;email;senha;telefone
-        // Deve corresponder ao formato usado no carregarUsuarios()
-        fprintf(arq, "%d;%s;%s;%s;%s\n",
-                usuarios[i].id,
-                usuarios[i].nome,
-                usuarios[i].email,
-                usuarios[i].senha,
-                usuarios[i].telefone);
-    }
-    
-    fclose(arq);
-} */
+} 
 
 void salvarCuidadores() {
     FILE *arq = fopen("cuidadores.txt", "w"); 
@@ -562,7 +553,7 @@ void salvarReservas() {
 
 
 void inicializarDados() {
-    //carregarUsuarios(); //não implementada
+    carregarUsuarios();
     carregarCuidadores();
     carregarReservas();
 }
@@ -855,42 +846,47 @@ FILE *arquivo = fopen("usuarios.txt", "a");
         printf("Erro ao abrir o arquivo salvar usuarios.\n");
         return;
     }
-   fprintf(arquivo, "%d;%s;%s;%s;%s\n",
+    fprintf(arquivo, "%d;%s;%s;%s\n",
            usuarioLogado.usuarioLogadoID,
             usuarioLogado.email,
             usuarioLogado.senha,
             usuarioLogado.telefone);
-            printf("usuario cadastrado!");
-            exibirMenuPrincipal();
             fclose(arquivo);
 }
-void verificarCadastro(char email_buscado[MAX_EMAIL],int opcao){
+int verificarCadastro(char email_buscado[MAX_EMAIL],int opcao){
     FILE *arq=fopen("usuarios.txt","r");
     if(arq==NULL){
-        printf("Erro ao abrir o arquivo cadastro");
-        return;
+        printf("Erro ao abrir o arquivo cadastro\n");
+        exit(1);
     }
     if(opcao==1){
         Usuario temp;
- while(fscanf(arq,"%d;%99[^;];%49[^;];%19[^\n]\n", &temp.usuarioLogadoID, temp.email, temp.senha, temp.telefone) == 4) {
-        if(strcmp(email_buscado,temp.email)==0){
-            printf("usuario já cadastrado, realizar login");
-           retornarMenu();
-            break;
+        while(fscanf(arq,"%d;%99[^;];%49[^;];%19[^\n]\n", &temp.usuarioLogadoID, temp.email, temp.senha, temp.telefone) == 4) {
+            if(strcmp(email_buscado,temp.email)==0){
+                printf("Usuario já cadastrado, realize o login.\n\n");
+                retornarMenu();
+                return 1;
+                break;
 
-        } } } if(opcao==2){
-            Usuario temp;
- while (fscanf(arq,"%d;%99[^;];%49[^;];%19[^\n]\n",
-              &temp.usuarioLogadoID,temp.email, temp.senha, temp.telefone) == 4) {
-        if(strcmp(email_buscado,temp.email)!=0){
-            printf("usuario não cadastrado, realizar cadastro");
-            retornarMenu();
-            break;
-        }
+            } } } 
+    if(opcao==2){
+        Usuario temp;
+        while (fscanf(arq,"%d;%99[^;];%49[^;];%19[^\n]\n", &temp.usuarioLogadoID,temp.email, temp.senha, temp.telefone) == 4) {
+            if(strcmp(email_buscado,temp.email)!=0)
+                continue;
+            else{
+                usuarioLogado.usuarioLogadoID = temp.usuarioLogadoID;
+                fclose(arq);
+                return 1;
+            }
         }
     }
-      fclose(arq);
+    printf("Usuario não cadastrado, realize o cadastro.\n\n");
+    retornarMenu();
+    return 0;
+    fclose(arq);
     }
+
 int verificarSenha(const char *email, const char *senha_digitada) {
     FILE *arq = fopen("usuarios.txt", "r");
     if (arq == NULL) {

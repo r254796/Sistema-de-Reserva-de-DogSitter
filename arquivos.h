@@ -1,3 +1,5 @@
+#include "dados.h"
+
 #ifndef ARQUIVOS_H
 #define ARQUIVOS_H
 
@@ -13,11 +15,11 @@ int validarHorario(char horario[]);
 void limparTela();
 void retornarMenu();
 
-int fazerLogin(); //não implementada
+void fazerLogin();
 void exibirMenuPrincipal();
 void listarCuidadores();
 
-void carregarUsuarios(); //não implementada
+void carregarUsuarios();
 void carregarCuidadores();
 void carregarReservas();
 void inicializarDados(); 
@@ -30,15 +32,15 @@ void liberarMemoria();
 
 
 void exibirMenuRelatorios();
-void relatorioFaturamento(); //não implementada
+void relatorioFaturamento(); 
 void relatorioReservas();    
-void historicoReservas(); //não implementada
+void historicoReservas();
 
 
 void novaReserva(int idUsuario);
 void listarReservasUsuario(int idUsuario);
 void cancelarReserva();
-void verificarCadastro(char email_buscado[MAX_EMAIL], int opcao);
+int verificarCadastro(char email_buscado[MAX_EMAIL], int opcao);
 int verificarSenha(const char *email, const char *senha_digitada);
 void salvarUsuarios();
 void retornarMenu();
