@@ -865,6 +865,7 @@ int verificarCadastro(char email_buscado[MAX_EMAIL],int opcao){
         while(fscanf(arq,"%d;%99[^;];%49[^;];%19[^\n]\n", &temp.usuarioLogadoID, temp.email, temp.senha, temp.telefone) == 4) {
             if(strcmp(email_buscado,temp.email)==0){
                 printf("Usuario já cadastrado, realize o login.\n\n");
+                fclose(arq);
                 retornarMenu();
                 return 1;
                 break;
@@ -881,12 +882,13 @@ int verificarCadastro(char email_buscado[MAX_EMAIL],int opcao){
                 return 1;
             }
         }
+        printf("Usuario não cadastrado, realize o cadastro.\n\n");
+        retornarMenu();
+        fclose(arq);
     }
-    printf("Usuario não cadastrado, realize o cadastro.\n\n");
-    retornarMenu();
     return 0;
-    fclose(arq);
-    }
+}
+    
 
 int verificarSenha(const char *email, const char *senha_digitada) {
     FILE *arq = fopen("usuarios.txt", "r");
